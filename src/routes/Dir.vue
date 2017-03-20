@@ -1,18 +1,21 @@
 <template lang="jade">
 div
+  h1
+    | {{path}}
   p
     router-link(
         v-if=" path != '/' ",
-        :to="'/dir'+dirname(path)"
+        :to="'/dir'+dirname(path)",
+        class="btn btn-block"
       )
       | ..
   div(v-for="d in dirs")
     p
-      router-link(:to=' "/dir" + d.path')
+      router-link(:to=' "/dir" + d.path', class="btn btn-block")
         | {{d.title}}
   div('v-for'="f in files")
     p
-      router-link(:to=' "/file" + f.path')
+      router-link(:to=' "/file" + f.path', class="btn btn-block")
         | {{f.title}}
 </template>
 <script>
@@ -31,6 +34,9 @@ export default {
       next(vm => vm.goto_path(to.params.path))
   },
   methods: {
+    get_title(path){
+      return path && path.match(/\/([^\/]+)\..*?$/)[1]
+    },
     goto_path (path) {
       this.path = path ? '/' + path.split("|").join("/") : '/'
       this.load_path(this.path)

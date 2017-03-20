@@ -1,0 +1,6 @@
+{
+  "themes": {
+    "dark": "//cdn.bootcss.com/bootswatch/3.3.7/darkly/bootstrap.css",
+    "light": "//cdn.bootcss.com/bootswatch/3.3.7/paper/bootstrap.css"
+  }
+}

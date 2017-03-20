@@ -8,6 +8,7 @@ export default new Vuex.Store({
     dir: '',
     filenames: [],
     routes: new Map,
+    messages: []
   },
   mutations: {
     store_dir_info(state, info) {
@@ -17,6 +18,9 @@ export default new Vuex.Store({
     },
     register_route(state, {name, route}){
       state.routes.set(name, route)
+    },
+    send_message(state, m){
+      state.messages.push(m)
     }
   },
   actions: {
@@ -26,5 +30,11 @@ export default new Vuex.Store({
     route_created({commit}, d) {
       commit('register_route', d)
     },
+    warn({commit}, message){
+      commit('send_message', {type: 'warn', message, show: true})
+    },
+    error({commit}, message){
+      commit('send_message', {type: 'error', message, show: true})
+    }
   }
 })

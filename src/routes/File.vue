@@ -1,8 +1,11 @@
 <template lang="jade">
 div
+  h1
+    | {{get_title(path)}}
   p
     router-link(
-        :to="'/dir'+dirname(path)"
+        :to="'/dir'+dirname(path)",
+        class="btn btn-block"
       )
       | ..
   div(v-if="path.match(/\.html$/)",v-html="content")
@@ -10,10 +13,12 @@ div
     img(:src=" 'dist/files' + path")
   div
     router-link(v-if="priv_path",
+        class="btn btn-block",
         @click='alert("FUCK")',
         :to='"/file" + priv_path')
       | Priv
     router-link(v-if="next_path",
+        class="btn btn-block",
         @click='goto_path("/file" + next_path)',
         :to='"/file" + next_path')
       | Next
@@ -36,19 +41,29 @@ export default {
   },
   methods: {
     goto_path (path) {
-      this.path = path ? '/' + path.split("|").join("/") : '/'
+      this.path = path ? '/' + path : '/'
       this.load_path(this.path)
     },
     load_path (path) {
       this.$http.get('dist/files' + path)
-        .then(res => res.body)
+        .then(res => res.body,
+              res => {
+                switch (res.status) {
+                  case 404:
+                    Store.dispatch('warn', 'File Not Found.')
+                    break;
+                  default:
+                    Store.dispatch('error', 'Unknown Network Error.')
+                }
+              })
         .then(c => {
           this.content = c
         })
       if(!Store.state.has_dir_info){
         this.$http.get('dist/files'+
           this.dirname(this.path)+'/index.json')
-          .then(res => res.json())
+          .then(
+            res => res.json())
           .then(data => {
             Store.dispatch('enter_dir', {
               dir: path,
@@ -59,6 +74,9 @@ export default {
       }else{
         this.calc_index()
       }
+    },
+    get_title(path){
+      return path && path.match(/\/([^\/]+?)(\..*)?$/)[1]
     },
     dirname(path) {
       let res = path.match(/^(.*)\/[^/]+$/)

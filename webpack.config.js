@@ -1,13 +1,22 @@
 var path = require('path')
 var webpack = require('webpack')
+var ExtractTextPlugin = require('extract-text-webpack-plugin')
 
 module.exports = {
-  entry: './src/main.js',
+  entry: {
+    app: './src/main.js',
+    vendor: './src/vendor.js',
+  },
   output: {
     path: path.resolve(__dirname, './dist'),
     publicPath: '/dist/',
-    filename: 'build.js'
+    filename: '[name].js'
   },
+  plugins: [
+    new webpack.HotModuleReplacementPlugin(),
+    new webpack.ProvidePlugin({ $: "jquery", jQuery: "jquery" }),
+    new ExtractTextPlugin("[name].css")
+  ],
   module: {
     rules: [
       {
@@ -30,6 +39,22 @@ module.exports = {
         options: {
           name: '[name].[ext]?[hash]'
         }
+      },
+      {
+        test: /\.css$/,
+        loader: ExtractTextPlugin.extract("css-loader")
+      },
+      {
+        test: /\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/,
+        loader: "url-loader?limit=10000&minetype=application/font-woff"
+      },
+      {
+        test: /\.(ttf|eot|svg)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
+        loader: "file-loader"
+      },
+      {
+        test: /\.json$/,
+        use: 'json-loader'
       }
     ]
   },
