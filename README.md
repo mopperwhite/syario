@@ -1,18 +1,33 @@
-# syario
+# Syario
 
-> A simple static file browser for GitHub Pages
+A simple static file browser for GitHub Pages.
 
-## Build Setup
+## Initialize
 
-``` bash
-# install dependencies
-npm install
+```bash
+yarn install
+bundle install
+rake init
 
-# serve with hot reload at localhost:8080
-npm run dev
-
-# build for production with minification
-npm run build
 ```
 
-For detailed explanation on how things work, consult the [docs for vue-loader](http://vuejs.github.io/vue-loader).
+Your files can be in _files/
+
+## Index Generation 
+
+```bash
+rake gen
+```
+
+The indices will be in dist/files
+
+## View
+
+```bash
+jekyll server
+```
+
+## Update
+
+Push it to your GitHub Pages brenches(like gh-pages) after the indices has been created.
+

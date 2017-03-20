@@ -2,7 +2,7 @@
 #encoding=utf-8
 require './create-index.rb'
 task :init do
-    File.mkdir 'files'
+    File.mkdir '_files'
     puts "Now you can put your files in files/ and run `rake gen'"
 end
 
