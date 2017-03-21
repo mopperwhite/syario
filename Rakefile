@@ -29,6 +29,8 @@ task :rebuild_gh_pages do
   system 'git push origin --delete gh-pages'
   system 'git checkout -B gh-pages'
   system 'git rm .gitignore'
+  File.write '.gitignore', 'node_modules'
+  system 'npm run dev'
 end
 
 task :commit_gh_pages do
