@@ -13,9 +13,17 @@ task :gen do
 end
 
 task :server do
-    system 'jekyll server'
+  system 'jekyll server'
 end
 
+task :publish, [:rebuild_gh_pages, :clean_generated_files, :gen, :commit_gh_pages] do
+  system 'git push origin gh-pages'
+  system 'git checkout master'
+end
+
+task :clean_generated_files do
+  FileUtils.remove_dir 'dist/files'
+end
 
 task :rebuild_gh_pages do
   system 'git remote origin --delete gh-pages'
@@ -23,5 +31,5 @@ task :rebuild_gh_pages do
 end
 
 task :commit_gh_pages do
-  system ''
+  system 'git add . && git commit -m "Auto commit"'
 end
