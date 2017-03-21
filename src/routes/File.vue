@@ -145,8 +145,10 @@ export default {
     Bus.$on('route-goto:file', path => {
       this.goto_path(path)
     })
-    Bus.$on('scroll', evt => {
-      this.progress = document.scrollingElement.scrollTop / (document.scrollingElement.scrollHeight-window.innerWidth)
+    document.addEventListener('scroll', evt => {
+      if(store.state.file_flag){
+        this.progress = document.scrollingElement.scrollTop / (document.scrollingElement.scrollHeight-window.innerWidth)
+      }
     })
   }
 }

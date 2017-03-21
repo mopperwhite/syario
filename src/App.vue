@@ -44,11 +44,6 @@ export default {
     setInterval(() => {
       this.check_theme()
     }, 5000)
-    document.addEventListener('scroll', evt => {
-      if(store.state.file_flag){
-        Bus.$emit('scroll', evt)
-      }
-    })
   }
 }
 </script>
