@@ -1,29 +1,26 @@
 <template lang="jade">
 div
-  h1
+  h1.text-center
     | {{get_title(path)}}
-  p
-    router-link(
-        :to="'/dir'+dirname(path)",
-        class="btn btn-block"
-      )
-      | ..
-  div(v-if="path.match(/\.html$/)",v-html="content")
-  div(v-else)
-    img(:src=" 'dist/files' + path")
-  div
-    router-link(v-if="priv_path",
-        class="btn btn-block",
-        @click='alert("FUCK")',
-        :to='"/file" + priv_path')
-      | Priv
-    router-link(v-if="next_path",
-        class="btn btn-block",
-        @click='goto_path("/file" + next_path)',
-        :to='"/file" + next_path')
-      | Next
+  router-link.btn.btn-block(:to="'/dir'+dirname(path)")
+      span.glyphicon.glyphicon-chevron-up
+  div.arti-con
+    div.article(v-html="content")
+  div.container
+    div.btn-group.row.navi-btn-group
+      router-link.btn.col-md-6(
+          :class="{disabled: !priv_path}",
+          @click='alert("FUCK")',
+          :to='"/file" + priv_path')
+        span.glyphicon.glyphicon-chevron-left
+      router-link.btn.col-md-6(
+          :class="{disabled: !next_path}"
+          @click='goto_path("/file" + next_path)',
+          :to='"/file" + next_path')
+        span.glyphicon.glyphicon-chevron-right
 </template>
 <script>
+import '../styles/buttons.css'
 import Store from '../store'
 
 export default {
@@ -94,3 +91,20 @@ export default {
   }
 }
 </script>
+<style scoped>
+.navi-btn-group {
+  width: 100%;
+  margin: 0;
+}
+.arti-con{
+  padding-left: 10%;
+  padding-right: 10%;
+}
+.article {
+}
+.article > img {
+  width: 1px;
+  margin-left: auto;
+  margin-right: auto;
+}
+</style>

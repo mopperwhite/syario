@@ -10,12 +10,19 @@ class IndexCreator
         def initialize(*extnames)
             @extnames = extnames
         end
-        def transfer(src, dst)
+        def transfer(src, dst, rpath, url_root)
+            @assert_dir = File.join(File.dirname(dst), 'asserts')
+            @assert_rpath = File.join(File.dirname(rpath), 'asserts')
+            @url_root = url_root
             if @loader.nil?
                 raise LoaderError.new "Loader is not initialized. @ #{src} -> #{dst}"
             else
                 @loader.call(src, dst)
             end
+        end
+        def as_assert(path)
+          FileUtils.copy path, File.join(@assert_dir, File.basename(path))
+          File.join @url_root, @assert_rpath, File.basename(path)
         end
         def on_ext(*extnames)
             @extnames.concat(
@@ -29,8 +36,9 @@ class IndexCreator
             @loader = block
         end
     end
-    def initialize(loaders)
+    def initialize(loaders, config={})
         @loader_dict = Hash.new
+        @config = config
         loaders.each do |l|
             l.extnames.each do |e|
                 raise Loader::LoaderError.new "Loader for #{e} overlapped." if @loader_dict.has_key? e
@@ -46,6 +54,8 @@ class IndexCreator
                 :files => [],
             }
         }
+        FileUtils.mkpath dst
+        FileUtils.mkpath File.join dst, 'asserts'
         Find.find src do |f|
             rpath= f.sub(%r{^#{src}}, '')
             sdst = File.join dst, rpath
@@ -55,11 +65,11 @@ class IndexCreator
                 fn = sdst
                 FileUtils.mkpath sdst
                 bn = File.basename(sdst)
-                if  bn == 'assert' || bn.start_with?('.')
+                if  bn == 'asserts' || bn.start_with?('.')
                     FileUtils.copy_entry f, sdst
                     Find.prune
                 else
-                    FileUtils.mkpath File.join(sdst, 'assert')
+                    FileUtils.mkpath File.join(sdst, 'asserts')
                     dir_indices[File.dirname f][:dirs].push(
                         :title => File.basename(f, '.*'),
                         :path => rpath
@@ -67,10 +77,10 @@ class IndexCreator
                     dir_indices[f] = {:rpath => rpath, :files=>[], :dirs=>[]}
                 end
             else
-                prune if File.basename(f) == 'index.json'
+                Find.prune if File.basename(f) == 'index.json'
                 if @loader_dict.has_key?(ext) && !File.basename(sdst).start_with?('.')
                     fn = File.join File.dirname(sdst), File.basename(sdst, '.*')+'.html'
-                    @loader_dict[ext].transfer f, fn
+                    @loader_dict[ext.downcase].transfer f, fn, fn.sub(%r{^#{dst}}, ''), @config[:url_root]
                 else
                     fn = sdst
                     FileUtils.copy f, fn
@@ -87,12 +97,12 @@ class IndexCreator
         end
     end
     class << self
-        def from_loaders_at(dir)
-            self.new Dir[File.join dir, '*.rb'].map do |f|
+        def from_loaders_at(dir, config={})
+            self.new Dir[File.join dir, '*.rb'].map{|f|
                 l = Loader.new
                 l.instance_eval File.read f
                 l
-            end
+            }, config
         end
     end
 end

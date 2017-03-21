@@ -8,7 +8,7 @@ div
         :to="'/dir'+dirname(path)",
         class="btn btn-block"
       )
-      | ..
+      span.glyphicon.glyphicon-chevron-up
   div(v-for="d in dirs")
     p
       router-link(:to=' "/dir" + d.path', class="btn btn-block")
@@ -19,6 +19,7 @@ div
         | {{f.title}}
 </template>
 <script>
+import '../styles/buttons.css'
 import Store from '../store'
 
 export default {
@@ -64,3 +65,5 @@ export default {
   }
 }
 </script>
+<style scoped>
+</style>

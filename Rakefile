@@ -8,7 +8,7 @@ end
 
 task :gen do
     IndexCreator
-        .from_loaders_at('loaders')
+        .from_loaders_at('loaders', url_root: 'dist/files')
         .create_index('_files', 'dist/files')
 end
 
