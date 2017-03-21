@@ -7,6 +7,7 @@ task :init do
 end
 
 task :gen do
+    FileUtils.remove_dir 'dist/files'
     IndexCreator
         .from_loaders_at('loaders', url_root: 'dist/files')
         .create_index('_files', 'dist/files')
@@ -16,9 +17,19 @@ task :server do
   system 'jekyll server'
 end
 
-task :publish => [:rebuild_gh_pages, :clean_generated_files, :gen, :commit_gh_pages] do
+task :r_publish => [:rebuild_gh_pages, :clean_generated_files, :gen, :commit_gh_pages] do
   system 'git push origin gh-pages'
   system 'git checkout master'
+end
+
+task :publish => [:gen] do
+  system ['git add .',
+          'git commit',
+          'git checkout gh-pages',
+          'git merge master',
+          'git push origin gh-pages',
+          'git checkout master',
+        ].join('&&')
 end
 
 task :clean_generated_files do
