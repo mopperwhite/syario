@@ -1,28 +1,22 @@
 <template lang="jade">
 div
-  h1.text-center
-    | {{get_title(path)}}
-  router-link.btn.btn-block(:to="'/dir'+dirname(path)")
-      span.glyphicon.glyphicon-chevron-up
-  div.arti-con
-    div.article(v-html="content")
   div.container
-    div.btn-group.row.navi-btn-group
-      router-link.btn.col-md-6(
-          :class="{disabled: !priv_path}",
-          @click='alert("FUCK")',
-          :to='"/file" + priv_path')
-        span.glyphicon.glyphicon-chevron-left
-      router-link.btn.col-md-6(
-          :class="{disabled: !next_path}"
-          @click='goto_path("/file" + next_path)',
-          :to='"/file" + next_path')
-        span.glyphicon.glyphicon-chevron-right
+    div.row
+      h1.text-center.col-md-12
+        | {{get_title(path)}}
+    div.row
+      router-link.col-md-12.btn.btn-block.nav-btn.btn-link.btn-lg(:to="'/dir'+dirname(path)")
+        span.glyphicon.glyphicon-chevron-up
+  navigate-button-group(:priv_path = "priv_path", :next_path = "next_path")
+  div.arti-con.center-block
+    div.article(v-html="content")
+  navigate-button-group(:priv_path = "priv_path", :next_path = "next_path")
 </template>
 <script>
 import '../styles/buttons.css'
 import Store from '../store'
-
+import Bus from '../bus'
+import NavigateButtonGroup from '../components/NavigateButtonGroup.vue'
 export default {
   name: 'filebrowser',
   data () {
@@ -32,6 +26,9 @@ export default {
       next_path: '',
       priv_path: '',
     }
+  },
+  components: {
+    NavigateButtonGroup
   },
   beforeRouteEnter (to, from, next) {
       next(vm => vm.goto_path(to.params.path))
@@ -87,24 +84,14 @@ export default {
     }
   },
   created(){
-    Store.dispatch('route_created', {name: 'file', route: this})
+    Bus.$on('route-goto:file', path => {
+      this.goto_path(path)
+    })
   }
 }
 </script>
 <style scoped>
-.navi-btn-group {
-  width: 100%;
-  margin: 0;
-}
 .arti-con{
-  padding-left: 10%;
-  padding-right: 10%;
-}
-.article {
-}
-.article > img {
-  width: 1px;
-  margin-left: auto;
-  margin-right: auto;
+  width: 90%;
 }
 </style>

@@ -1,26 +1,25 @@
 <template lang="jade">
 div
-  h1
-    | {{path}}
-  p
-    router-link(
+  h1.dir-path
+    span
+      | {{path}}
+  div.center-block.con
+    router-link.btn.btn-block.nav-btn.btn-lg.btn-link(
         v-if=" path != '/' ",
-        :to="'/dir'+dirname(path)",
-        class="btn btn-block"
+        :to="'/dir'+dirname(path)"
       )
       span.glyphicon.glyphicon-chevron-up
-  div(v-for="d in dirs")
-    p
-      router-link(:to=' "/dir" + d.path', class="btn btn-block")
+    div.btn-con(v-for="d in dirs")
+      router-link.btn.btn-block.btn-primary(:to=' "/dir" + d.path')
         | {{d.title}}
-  div('v-for'="f in files")
-    p
-      router-link(:to=' "/file" + f.path', class="btn btn-block")
+    div.btn-con('v-for'="f in files")
+      router-link.btn.btn-block.btn-info(:to=' "/file" + f.path')
         | {{f.title}}
 </template>
 <script>
 import '../styles/buttons.css'
 import Store from '../store'
+import Bus from '../bus'
 
 export default {
   name: 'dirbrowser',
@@ -61,9 +60,28 @@ export default {
     }
   },
   created () {
-    Store.dispatch('route_created', {name: 'dir', route: this})
+    Bus.$on('route-goto:dir', path => {
+      this.goto_path(path)
+    })
   }
 }
 </script>
 <style scoped>
+.con{
+  width: 90%;
+}
+.btn-con{
+  margin-top: 1em;
+  font-size: 1.5em;
+}
+h1.dir-path{
+  width: 90%;
+  margin-left: auto;
+  margin-right: auto;
+  overflow-x: hidden;
+  overflow-y: hidden;
+  text-align: center;;
+  direction: rtl;
+  white-space: nowrap;
+}
 </style>

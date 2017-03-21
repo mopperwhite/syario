@@ -6,7 +6,7 @@ require 'fileutils'
 class IndexCreator
     class Loader
         LoaderError = Class.new StandardError
-        attr_reader :extnames
+        attr_reader :extnames, :src_dir
         def initialize(*extnames)
             @extnames = extnames
         end
@@ -14,6 +14,7 @@ class IndexCreator
             @assert_dir = File.join(File.dirname(dst), 'asserts')
             @assert_rpath = File.join(File.dirname(rpath), 'asserts')
             @url_root = url_root
+            @src_dir = File.dirname(src)
             if @loader.nil?
                 raise LoaderError.new "Loader is not initialized. @ #{src} -> #{dst}"
             else

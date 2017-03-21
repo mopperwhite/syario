@@ -5,6 +5,7 @@ Vue.use(VueRouter)
 import Dir from './routes/Dir.vue'
 import File from './routes/File.vue'
 import Store from './store'
+import Bus from './bus'
 const routes = [
   { path: '/',          redirect: '/dir'},
   { path: '/dir',       component: Dir},
@@ -13,14 +14,12 @@ const routes = [
 ]
 
 const router = new VueRouter({routes})
-
 router.beforeEach((to, from, next) => {
   const rs = ['dir', 'file']
   for(let r of rs){
     let rg = new RegExp(`^\/${r}`)
     if(to.path.match(rg)){
-      const p = Store.state.routes.get(r)
-      if(p) p.goto_path(to.params.path || '/')
+      Bus.$emit(`route-goto:${r}`, to.params.path || '/')
       break
     }
   }

@@ -1,7 +1,14 @@
 <template lang='jade'>
-div.msgbox
-  span(@click="$emit('close')", :class="text_style")
-    | {{msg}}
+div.container.msgbox.alert(:class="alert_style")
+  div.row
+    span.col-md-10.text_style
+      | {{msg}}
+    button.col-md-2.close.close-btn(
+      @click="$emit('close')",
+      type="button",
+      aria-label="Close")
+      span(aria-hidden="true")
+        i.glyphicon.glyphicon-remove
 </template>
 <script>
 export default {
@@ -21,12 +28,23 @@ export default {
         info: 'text-info',
       }[this.type]
     },
+    alert_style () {
+      return {
+        error: 'alert-danger',
+        warn: 'alert-warning',
+        info: 'alert-info',
+      }[this.type]
+    }
   }
 }
 </script>
 <style scoped>
 .msgbox{
   width: 100%;
-  padding: 2em;
+  padding: 0.5em;
+  font-size: 2.5em;
+}
+.close-btn{
+  font-size: 1.5em;
 }
 </style>
