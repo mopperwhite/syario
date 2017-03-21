@@ -5,6 +5,7 @@ class MdRender < Redcarpet::Render::HTML
   def image(src, title, alt_text)
     p A___SELF
     %Q{<img
+      class="img-responsive center-block"
       src=#{
         src.start_with?('asserts/') ?
           A___SELF.as_assert(File.join(A___SELF.src_dir, src)) :
