@@ -15,3 +15,13 @@ end
 task :server do
     system 'jekyll server'
 end
+
+
+task :rebuild_gh_pages do
+  system 'git remote origin --delete gh-pages'
+  system 'git checkout -B gh-pages'
+end
+
+task :commit_gh_pages do
+  system ''
+end
