@@ -8,7 +8,8 @@ export default new Vuex.Store({
     dir: '',
     filenames: [],
     routes: new Map,
-    messages: []
+    messages: [],
+    file_flag: false,
   },
   mutations: {
     store_dir_info(state, info) {
@@ -18,6 +19,9 @@ export default new Vuex.Store({
     },
     send_message(state, m){
       state.messages.push(m)
+    },
+    set_file_flag(state, s){
+      state.file_flag = s
     }
   },
   actions: {
@@ -29,6 +33,12 @@ export default new Vuex.Store({
     },
     error({commit}, message){
       commit('send_message', {type: 'error', message, show: true})
+    },
+    enter_file({commit}) {
+      commit('set_file_flag', true)
+    },
+    leave_file({commit}){
+      commit('set_file_flag', false)
     }
   }
 })

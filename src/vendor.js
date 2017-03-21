@@ -9,5 +9,5 @@ import "bootstrap-material-design/dist/js/ripples.js?jQuery=jquery"
 $.material.init()
 $.material.ripples()
 */
-// import 'font-awesome/css/font-awesome.css'
+import 'font-awesome/css/font-awesome.css'
 export default $

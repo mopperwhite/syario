@@ -11,9 +11,13 @@ div
       span.glyphicon.glyphicon-chevron-up
     div.btn-con(v-for="d in dirs")
       router-link.btn.btn-block.btn-primary(:to=' "/dir" + d.path')
+        i.fa.fa-folder-o
         | {{d.title}}
     div.btn-con('v-for'="f in files")
-      router-link.btn.btn-block.btn-info(:to=' "/file" + f.path')
+      router-link.btn.btn-block(
+          :to=' "/file" + f.path',
+          :class='{"btn-info": !file_read(f.path), "btn-success": file_read(f.path)}'
+        )
         | {{f.title}}
 </template>
 <script>
@@ -34,6 +38,9 @@ export default {
       next(vm => vm.goto_path(to.params.path))
   },
   methods: {
+    file_read(path){
+      return localStorage[`finished?${path}`]
+    },
     get_title(path){
       return path && path.match(/\/([^\/]+)\..*?$/)[1]
     },

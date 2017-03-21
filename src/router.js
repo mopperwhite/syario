@@ -23,7 +23,13 @@ router.beforeEach((to, from, next) => {
       break
     }
   }
+  if(to.path.match(/^\/file/)){
+    Store.dispatch('enter_file')
+  }else{
+    Store.dispatch('leave_file')
+  }
+
   next()
 })
-
+window.R = router
 export default router

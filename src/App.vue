@@ -14,6 +14,7 @@
 <script>
 import settings from '../settings.json'
 import store from './store'
+import Bus from './bus'
 import MessageBox from './components/MessageBox.vue'
 
 export default {
@@ -43,6 +44,11 @@ export default {
     setInterval(() => {
       this.check_theme()
     }, 5000)
+    document.addEventListener('scroll', evt => {
+      if(store.state.file_flag){
+        Bus.$emit('scroll', evt)
+      }
+    })
   }
 }
 </script>
