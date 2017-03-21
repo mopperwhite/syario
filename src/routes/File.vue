@@ -2,25 +2,24 @@
 div
   div.container
     div.row
-      h1.text-center.col-md-12
+      h1.text-center.col-md-12.col-xs-12
         | {{get_title(path)}}
-    div.row
-      router-link.col-md-12.btn.btn-block.nav-btn.btn-link.btn-lg(:to="'/dir'+dirname(path)")
+    router-link.btn.btn-block.nav-btn.btn-link.btn-lg(:to="'/dir'+dirname(path)")
         span.glyphicon.glyphicon-chevron-up
   navigate-button-group(:priv_path = "priv_path", :next_path = "next_path")
   div.container(v-if="local_progress")
     div.row.botnavi
-      button.btn.btn-block.btn-success.col-md-12(@click="recover_progress")
+      button.btn.btn-block.btn-success.col-md-12.col-xs-12(@click="recover_progress")
         i.fa.fa-circle-o(aria-hidden="true")
         | RECOVER PROGRESS({{(local_progress*100).toFixed(1)}}%)
   div.arti-con.center-block
     div.article(v-html="content")
   div.container
     div.row.botnavi
-      router-link.col-md-6.btn.btn-default(:to="'/dir'+dirname(path)")
+      router-link.col-md-6.col-xs-6.btn.btn-default(:to="'/dir'+dirname(path)")
         span.glyphicon.glyphicon-chevron-up
         | BACK
-      button.btn.col-md-6(
+      button.btn.col-md-6.col-xs-6(
           :class="{'btn-info': !finished, 'btn-success': finished}"
           @click="set_finished(!finished)"
         )
@@ -33,7 +32,7 @@ div
       role="group",
       :class='{"left-edge": left_hand, "right-edge": !left_hand}'
     )
-    router-link.col-md-12.btn.btn-block.nav-btn.btn-default.btn-lg(
+    router-link.col-md-12.col-xs-12.btn.btn-block.nav-btn.btn-default.btn-lg(
       :to="'/dir'+dirname(path)")
       span.glyphicon.glyphicon-chevron-up
     button.btn(

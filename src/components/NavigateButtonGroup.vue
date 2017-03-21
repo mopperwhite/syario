@@ -1,11 +1,11 @@
 <template lang="jade">
 div.container.navi-btn-group
   div.btn-group.row.navi-btn-group
-    router-link.btn.col-md-6.nav-btn.btn-lg.btn-link(
+    router-link.btn.col-md-6.col-xs-6.nav-btn.btn-lg.btn-link(
         :class="{disabled: !priv_path}",
         :to='"/file" + priv_path')
       span.glyphicon.glyphicon-chevron-left
-    router-link.btn.col-md-6.nav-btn.btn-lg.btn-link(
+    router-link.btn.col-md-6.col-xs-6.nav-btn.btn-lg.btn-link(
         :class="{disabled: !next_path}"
         @click='goto_path("/file" + next_path)',
         :to='"/file" + next_path')
