@@ -16,7 +16,7 @@ task :server do
   system 'jekyll server'
 end
 
-task :publish, [:rebuild_gh_pages, :clean_generated_files, :gen, :commit_gh_pages] do
+task :publish => [:rebuild_gh_pages, :clean_generated_files, :gen, :commit_gh_pages] do
   system 'git push origin gh-pages'
   system 'git checkout master'
 end
@@ -26,7 +26,7 @@ task :clean_generated_files do
 end
 
 task :rebuild_gh_pages do
-  system 'git remote origin --delete gh-pages'
+  system 'git push origin --delete gh-pages'
   system 'git checkout -B gh-pages'
 end
 
