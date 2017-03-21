@@ -2,6 +2,10 @@
 
 A simple static file browser for GitHub Pages.
 
+## Demo
+
+[mopperwhite.github.io/syario](//mopperwhite.github.io/syario)
+
 ## Initialize
 
 ```bash
