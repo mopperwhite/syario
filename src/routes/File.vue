@@ -91,6 +91,7 @@ export default {
       localStorage[`progress:${this.path}`] = this.progress
     },
     goto_path (path) {
+      Store.dispatch('enter_file')
       this.path = path ? '/' + path : '/'
       this.local_progress = parseFloat(localStorage[`progress:${this.path}`])
       this.finished = localStorage[`finished?${this.path}`]
@@ -145,7 +146,12 @@ export default {
     Bus.$on('route-goto:file', path => {
       this.goto_path(path)
     })
-    window.addEventListener('scroll', evt => {
+    document.addEventListener('scroll', evt => {
+      if(store.state.file_flag){
+        Bus.$emit('scroll', evt)
+      }
+    })
+    Bus.$on('scroll', evt => {
       this.progress = document.scrollingElement.scrollTop / (document.scrollingElement.scrollHeight-window.innerWidth)
       console.log(this.progress)
     })
