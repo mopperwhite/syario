@@ -30,7 +30,7 @@ task :rebuild_gh_pages do
   system 'git checkout -B gh-pages'
   system 'git rm .gitignore'
   File.write '.gitignore', 'node_modules'
-  system 'npm run dev'
+  system 'npm run build'
 end
 
 task :commit_gh_pages do
