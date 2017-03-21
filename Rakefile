@@ -28,6 +28,7 @@ end
 task :rebuild_gh_pages do
   system 'git push origin --delete gh-pages'
   system 'git checkout -B gh-pages'
+  system 'git rm .gitignore'
 end
 
 task :commit_gh_pages do
