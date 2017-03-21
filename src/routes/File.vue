@@ -146,9 +146,8 @@ export default {
       this.goto_path(path)
     })
     document.addEventListener('scroll', evt => {
-      if(store.state.file_flag){
-        this.progress = document.scrollingElement.scrollTop / (document.scrollingElement.scrollHeight-window.innerWidth)
-      }
+      this.progress = document.scrollingElement.scrollTop / (document.scrollingElement.scrollHeight-window.innerWidth)
+      console.log(this.progress)
     })
   }
 }
