@@ -146,10 +146,7 @@ export default {
       this.goto_path(path)
     })
     Bus.$on('scroll', evt => {
-      const top = document.scrollingElement.scrollTop
-      const height = document.scrollingElement.scrollHeight
-      const wh = window.innerWidth
-      this.progress = top / (height-wh)
+      this.progress = document.scrollingElement.scrollTop / (document.scrollingElement.scrollHeight-window.innerWidth)
     })
   }
 }
