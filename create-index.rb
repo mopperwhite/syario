@@ -91,7 +91,7 @@ class IndexCreator
                     :path  => fn.sub(%r{^#{dst}}, '')
                 )
             end
-            puts "#{f} => #{fn}"
+            #puts "#{f} => #{fn}"
         end
         dir_indices.each_value do |data|
             File.write (File.join dst, data[:rpath], 'index.json'), data.to_json
