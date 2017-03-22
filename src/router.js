@@ -2,15 +2,19 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 Vue.use(VueRouter)
 
-import Dir from './routes/Dir.vue'
-import File from './routes/File.vue'
 import Store from './store'
 import Bus from './bus'
+
+import Dir from './routes/Dir.vue'
+import File from './routes/File.vue'
+import Dashboard from './routes/Dashboard.vue'
+
 const routes = [
   { path: '/',          redirect: '/dir'},
   { path: '/dir',       component: Dir},
   { path: '/dir/:path(.+)', component: Dir },
-  { path: '/file/:path(.+)', component: File }
+  { path: '/file/:path(.+)', component: File },
+  { path: '/dashboard' , component: Dashboard }
 ]
 
 const router = new VueRouter({routes})

@@ -31,6 +31,9 @@ export default new Vuex.Store({
     warn({commit}, message){
       commit('send_message', {type: 'warn', message, show: true})
     },
+    info({commit}, message){
+      commit('send_message', {type: 'info', message, show: true})
+    },
     error({commit}, message){
       commit('send_message', {type: 'error', message, show: true})
     },
