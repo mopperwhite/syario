@@ -1,5 +1,9 @@
 <template lang="jade">
   #app
+    link(
+      rel="stylesheet",
+      :href="theme_link"
+    )
     div
       div(v-for="m in store.state.messages")
         message-box(
@@ -21,28 +25,36 @@ export default {
   name: 'app',
   data () {
     return {
-      store
+      store,
+      theme_link: settings.themes.light,
     }
   },
   components: {
     MessageBox
   },
   methods: {
-    check_theme(){
+    check_time(){
       let h = new Date().getHours()
-      document
-        .getElementById('themeLink')
-        .setAttribute('href', settings.themes[
-          h > 6 && h < 22 ?
-            'light':
-          'dark'
-        ])
+      if(h > 6 && h < 22){
+        store.dispatch('night_shift_off')
+        this.theme_link = settings.themes.light
+      }else{
+        store.dispatch('night_shift_on')
+        this.theme_link = settings.themes.dark
+      }
+      // document
+      //   .getElementById('themeLink')
+      //   .setAttribute('href', settings.themes[
+      //     h > 6 && h < 22 ?
+      //       'light':
+      //     'dark'
+      //   ])
     }
   },
   created(){
-    this.check_theme()
+    this.check_time()
     setInterval(() => {
-      this.check_theme()
+      this.check_time()
     }, 5000)
     window.addEventListener('scroll', evt => {
       if(store.state.file_flag){

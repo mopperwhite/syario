@@ -10,6 +10,7 @@ export default new Vuex.Store({
     routes: new Map,
     messages: [],
     file_flag: false,
+    night_shift: false,
   },
   mutations: {
     store_dir_info(state, info) {
@@ -22,6 +23,9 @@ export default new Vuex.Store({
     },
     set_file_flag(state, s){
       state.file_flag = s
+    },
+    set_night_shift(state, s){
+      state.night_shift = s
     }
   },
   actions: {
@@ -42,6 +46,12 @@ export default new Vuex.Store({
     },
     leave_file({commit}){
       commit('set_file_flag', false)
-    }
+    },
+    night_shift_on({commit}){
+      commit('set_night_shift', true)
+    },
+    night_shift_off({commit}){
+      commit('set_night_shift', false)
+    },
   }
 })

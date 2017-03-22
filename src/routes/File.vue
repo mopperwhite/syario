@@ -12,8 +12,10 @@ div
       button.btn.btn-block.btn-success.col-md-12.col-xs-12(@click="recover_progress")
         i.fa.fa-circle-o(aria-hidden="true")
         | RECOVER PROGRESS({{(local_progress*100).toFixed(1)}}%)
-  div.arti-con.center-block
-    div.article(v-html="content")
+  h1.text-muted.text-center(v-if="loading")
+    | Loading...
+  div.arti-con.center-block(v-else)
+    div.article(v-html="content", :class="{'night-shift': (image_night_shift && store.state.night_shift)}")
   div.container
     div.row.botnavi
       router-link.col-md-6.col-xs-6.btn.btn-default(:to="'/dir'+dirname(path)")
@@ -43,6 +45,7 @@ div
       | {{(progress*100).toFixed(1)}}%
 </template>
 <script>
+import '../styles/night-shift.css'
 import '../styles/buttons.css'
 import Store from '../store'
 import Bus from '../bus'
@@ -59,7 +62,10 @@ export default {
       priv_path: '',
       progress: 0,
       finished: false,
-      local_progress: 0
+      local_progress: 0,
+      loading: false,
+      image_night_shift: Settings.night_shift.image,
+      store: Store
     }
   },
   components: {
@@ -98,6 +104,7 @@ export default {
       this.load_path(this.path)
     },
     load_path (path) {
+      this.loading = true
       this.$http.get('dist/files' + path)
         .then(res => res.body,
               res => {
@@ -111,6 +118,7 @@ export default {
               })
         .then(c => {
           this.content = c
+          this.loading = false
         })
       if(!Store.state.has_dir_info){
         this.$http.get('dist/files'+
