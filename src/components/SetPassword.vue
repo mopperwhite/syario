@@ -32,7 +32,7 @@ export default {
     com_pwd (pwd) {
       this.pwd_cd = pwd
       if(this.pwd == this.pwd_cd){
-        localStorage['password'] = this.pwd
+        Store.dispatch('set_password', this.pwd)
         Store.dispatch('info', 'Succeed')
       }else{
         Store.dispatch('warn', 'Password Not Comfirmed')

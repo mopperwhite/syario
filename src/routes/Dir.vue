@@ -19,11 +19,14 @@ div
           :class='{"btn-info": !file_read(f.path), "btn-success": file_read(f.path)}'
         )
         | {{f.title}}
+  fixed-btn-group
+
 </template>
 <script>
 import '../styles/buttons.css'
 import Store from '../store'
 import Bus from '../bus'
+import FixedBtnGroup from '../components/FixedBtnGroup.vue'
 
 export default {
   name: 'dirbrowser',
@@ -33,6 +36,9 @@ export default {
       dirs: [],
       files: []
     }
+  },
+  components: {
+    FixedBtnGroup
   },
   beforeRouteEnter (to, from, next) {
       next(vm => vm.goto_path(to.params.path))
@@ -64,6 +70,9 @@ export default {
             filenames: data.files.map(f => f.path)
           })
         })
+    },
+    lock(){
+      Store.dispatch('lock')
     }
   },
   created () {

@@ -3,6 +3,9 @@ div.center-block.dashboard
   h1
     i.fa.fa-cog
     | Dashboard
+  button.btn.btn-link.btn-block.btn-lg(@click="back")
+    i.glyphicon.glyphicon-chevron-left
+    | Back
   set-password(v-if="set_pwd_flag", @done="set_pwd_flag = false")
   button.btn.btn-info.btn-block(v-else, @click="set_pwd_flag = true")
     | Set Passowrd
@@ -10,10 +13,12 @@ div.center-block.dashboard
     | Erase Password
 </template>
 <script>
+import store from '../store'
 import SetPassword from '../components/SetPassword.vue'
 export default {
   data () {
     return {
+      store,
       set_pwd_flag: false
     }
   },
@@ -23,7 +28,10 @@ export default {
   methods: {
     erase_pwd () {
       if(confirm('Erase your passowrd?'))
-        delete localStorage['password']
+        store.dispatch('del_password')
+    },
+    back () {
+      window.history.back()
     }
   }
 }

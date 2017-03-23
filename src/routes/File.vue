@@ -30,14 +30,12 @@ div
           aria-hidden="true")
         | {{ finished ? 'FINISHED' : 'READING' }}
   navigate-button-group(:priv_path = "priv_path", :next_path = "next_path")
-  div.view-ctl.btn-group-vertical(
-      role="group",
-      :class='{"left-edge": left_hand, "right-edge": !left_hand}'
-    )
+  fixed-btn-group
     router-link.col-md-12.col-xs-12.btn.btn-block.nav-btn.btn-default.btn-lg(
       :to="'/dir'+dirname(path)")
       span.glyphicon.glyphicon-chevron-up
     button.btn(
+        v-if="progress_needed",
         :class='{"btn-info": !progress_stored(), "btn-success": progress_stored()}',
         @click="store_progress"
       )
@@ -51,11 +49,11 @@ import Store from '../store'
 import Bus from '../bus'
 import Settings from '../../settings.json'
 import NavigateButtonGroup from '../components/NavigateButtonGroup.vue'
+import FixedBtnGroup from '../components/FixedBtnGroup.vue'
 export default {
   name: 'filebrowser',
   data () {
     return {
-      left_hand: Settings.left_hand,
       content: '',
       path: '',
       next_path: '',
@@ -64,12 +62,14 @@ export default {
       finished: false,
       local_progress: 0,
       loading: false,
+      progress_needed: true,
       image_night_shift: Settings.night_shift.image,
       store: Store
     }
   },
   components: {
-    NavigateButtonGroup
+    NavigateButtonGroup,
+    FixedBtnGroup
   },
   beforeRouteEnter (to, from, next) {
       next(vm => vm.goto_path(to.params.path))
@@ -78,7 +78,6 @@ export default {
     set_finished(val){
       if(this.finished = val){
         localStorage[`finished?${this.path}`] = "t"
-        delete localStorage[`progress:${this.path}`]
       }else{
         delete localStorage[`finished?${this.path}`]
       }
@@ -155,7 +154,13 @@ export default {
       this.goto_path(path)
     })
     Bus.$on('scroll', evt => {
-      this.progress = document.scrollingElement.scrollTop / (document.scrollingElement.scrollHeight-window.innerWidth)
+      if(this.progress_needed =
+        document.scrollingElement.scrollHeight >
+        window.innerWidth){
+        this.progress =
+          document.scrollingElement.scrollTop /
+          (document.scrollingElement.scrollHeight-window.innerWidth)
+      }
     })
   }
 }
@@ -166,17 +171,5 @@ export default {
 }
 .article{
   font-size: 2em;
-}
-.view-ctl{
-  position: fixed;
-  bottom: 1em;
-}
-.left-edge{
-  left: 1em;
-}
-.right-edge{
-  right: 1em;
-}
-.view-ctl > button {
 }
 </style>

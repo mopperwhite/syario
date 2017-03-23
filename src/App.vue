@@ -12,7 +12,17 @@
           v-if = "m.show"
           @close = "m.show = false"
         )
-    router-view
+
+    div(v-if="store.state.has_password && store.state.locked")
+      h1.text-center
+        i.fa.fa-lock
+        | Locked
+      password(@confirm="confirm_pwd", digit, length=6)
+    div(v-show="!store.state.has_password || !store.state.locked")
+      router-view
+      router-link.btn.btn-link.btn-block(to="/dashboard")
+        i.fa.fa-cog
+        | Dashboard
 </template>
 
 <script>
@@ -20,6 +30,7 @@ import settings from '../settings.json'
 import store from './store'
 import Bus from './bus'
 import MessageBox from './components/MessageBox.vue'
+import Password from './components/Password.vue'
 
 export default {
   name: 'app',
@@ -30,7 +41,8 @@ export default {
     }
   },
   components: {
-    MessageBox
+    MessageBox,
+    Password
   },
   methods: {
     check_time(){
@@ -42,13 +54,14 @@ export default {
         store.dispatch('night_shift_on')
         this.theme_link = settings.themes.dark
       }
-      // document
-      //   .getElementById('themeLink')
-      //   .setAttribute('href', settings.themes[
-      //     h > 6 && h < 22 ?
-      //       'light':
-      //     'dark'
-      //   ])
+    },
+    password_enabled(){
+      return !!localStorage['password']
+    },
+    confirm_pwd(pwd){
+      if(pwd == localStorage['password']){
+        store.dispatch('unlock')
+      }
     }
   },
   created(){

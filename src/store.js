@@ -11,6 +11,8 @@ export default new Vuex.Store({
     messages: [],
     file_flag: false,
     night_shift: false,
+    locked: true,
+    has_password: !!localStorage['password'],
   },
   mutations: {
     store_dir_info(state, info) {
@@ -26,6 +28,12 @@ export default new Vuex.Store({
     },
     set_night_shift(state, s){
       state.night_shift = s
+    },
+    set_lock(state, s){
+      state.locked = s
+    },
+    set_pwd_state(state, s){
+      state.has_password = s
     }
   },
   actions: {
@@ -53,5 +61,20 @@ export default new Vuex.Store({
     night_shift_off({commit}){
       commit('set_night_shift', false)
     },
+    lock({commit}){
+      commit('set_lock', true)
+    },
+    unlock({commit}){
+      commit('set_lock', false)
+    },
+    set_password({commit}, pwd){
+      localStorage['password'] = pwd
+      commit('set_pwd_state', true)
+    },
+    del_password({commit}){
+      delete localStorage['password']
+      commit('set_pwd_state', false)
+    },
+
   }
 })
