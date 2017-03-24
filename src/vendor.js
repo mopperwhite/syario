@@ -10,4 +10,6 @@ $.material.init()
 $.material.ripples()
 */
 import 'font-awesome/css/font-awesome.css'
+import 'font-awesome/fonts/fontawesome-webfont.ttf'
+import 'font-awesome/fonts/fontawesome-webfont.woff2'
 export default $
