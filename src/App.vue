@@ -61,6 +61,7 @@ export default {
     confirm_pwd(pwd){
       if(pwd == localStorage['password']){
         store.dispatch('unlock')
+        document.title = store.state.title
       }
     }
   },
@@ -82,7 +83,9 @@ export default {
           store.dispatch('lock')
         }
       }else{
-        document.title = store.state.title
+        if(!localStorage['autolock']){
+          document.title = store.state.title
+        }
       }
     })
   }
