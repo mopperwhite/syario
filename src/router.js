@@ -29,8 +29,14 @@ router.beforeEach((to, from, next) => {
   }
   if(to.path.match(/^\/file/)){
     Store.dispatch('enter_file')
-  }else{
+    Store.dispatch('set_title', to.params.path)
+    document.title = Store.state.title
+  }else if(to.path.match(/^\/dir/)){
     Store.dispatch('leave_file')
+    Store.dispatch('set_title', to.params.path ? to.params.path+"/": '/')
+    document.title = Store.state.title
+  }else{
+    document.title = Store.state.default_title
   }
 
   next()

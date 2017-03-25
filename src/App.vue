@@ -74,6 +74,17 @@ export default {
         Bus.$emit('scroll', evt)
       }
     })
+    document.title = store.state.default_title
+    document.addEventListener('visibilitychange', evt => {
+      if(document.hidden){
+        document.title = store.state.default_title
+        if(localStorage['autolock']){
+          store.dispatch('lock')
+        }
+      }else{
+        document.title = store.state.title
+      }
+    })
   }
 }
 </script>

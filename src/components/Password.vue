@@ -35,12 +35,17 @@ export default {
 
     },
     digit: {
-      tpye: Boolean,
+      type: Boolean,
+      value: false
+    },
+    fromKey: {
+      type: Boolean,
       value: false
     }
   },
   data () {
     return {
+      __onKeyUp: null,
       password: '',
       keyboard: [
         ['1','2','3'],
@@ -49,6 +54,22 @@ export default {
         ['DEL', '0', 'OK']
       ]
     }
+  },
+  created() {
+    this.__onKeyUp = evt => {
+      const c = evt.key
+      if(c >= '0' && c <= '9'){
+        this.add_digit(c)
+      }else if(c=='Backspace'){
+        this.add_digit('DEL')
+      }else if(c=='Enter'){
+        this.add_digit('OK')
+      }
+    }
+    document.addEventListener("keyup", this.__onKeyUp)
+  },
+  beforeDestroy() {
+    document.removeEventListener("keyup", this.__onKeyUp)
   },
   methods: {
     digenabled(n){

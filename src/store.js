@@ -13,6 +13,9 @@ export default new Vuex.Store({
     night_shift: false,
     locked: true,
     has_password: !!localStorage['password'],
+    title: '',
+    path: '/',
+    default_title: document.getElementsByTagName("title")[0].text,
   },
   mutations: {
     store_dir_info(state, info) {
@@ -34,11 +37,25 @@ export default new Vuex.Store({
     },
     set_pwd_state(state, s){
       state.has_password = s
+    },
+    set_title(state, t){
+      state.title = t
+    },
+    set_path(state, p){
+      state.path = p
     }
   },
   actions: {
     enter_dir ({commit}, info) {
       commit('store_dir_info', info)
+    },
+    set_title({commit}, t){
+      commit('set_title', t)
+    },
+    view_path({commit}, path){
+      let res = path && path.match('\/([^\/]*)$')
+      commit('set_title', (res && res[1]) || '/')
+      commit('set_path', path)
     },
     warn({commit}, message){
       commit('send_message', {type: 'warn', message, show: true})
@@ -75,6 +92,5 @@ export default new Vuex.Store({
       delete localStorage['password']
       commit('set_pwd_state', false)
     },
-
   }
 })
