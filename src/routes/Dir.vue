@@ -9,12 +9,18 @@ div
         :to="'/dir'+dirname(path)"
       )
       span.glyphicon.glyphicon-chevron-up
+    div.form-group
+        input.form-control.search-input(v-model="search_words")
     div.btn-con(v-for="d in dirs")
-      router-link.btn.btn-block.btn-primary(:to=' "/dir" + d.path')
+      router-link.btn.btn-block.btn-primary(
+          :to=' "/dir" + d.path',
+          v-if="!search_words || match_search(d.title)"
+        )
         i.fa.fa-folder-o
         | {{d.title}}
     div.btn-con('v-for'="f in files")
       router-link.btn.btn-block(
+          v-if="!search_words || match_search(f.title)",
           :to=' "/file" + f.path',
           :class='{"btn-info": !file_read(f.path), "btn-success": file_read(f.path)}'
         )
@@ -34,7 +40,8 @@ export default {
     return {
       path: '',
       dirs: [],
-      files: []
+      files: [],
+      search_words: '',
     }
   },
   components: {
@@ -44,6 +51,13 @@ export default {
       next(vm => vm.goto_path(to.params.path))
   },
   methods: {
+    match_search(s){
+      s = s.toLowerCase()
+      for(let k of this.search_words.toLowerCase().split(" "))
+        if(s.indexOf(k) < 0)
+          return false
+      return true
+    },
     file_read(path){
       return localStorage[`finished?${path}`]
     },
@@ -99,5 +113,9 @@ h1.dir-path{
   text-align: center;;
   direction: rtl;
   white-space: nowrap;
+}
+.search-input{
+  text-align: center;
+  font-size: 1.5em;
 }
 </style>
