@@ -15,7 +15,6 @@ div
           v-model="search_words",
           @input="store.dispatch('keywords_changed', search_words)"
         )
-        span.glyphicon.glyphicon-remove-circle
     div.btn-con(v-for="d in dirs")
       router-link.btn.btn-block.btn-primary(
           :to=' "/dir" + d.path',
