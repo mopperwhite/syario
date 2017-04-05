@@ -10,7 +10,12 @@ div
       )
       span.glyphicon.glyphicon-chevron-up
     div.form-group
-        input.form-control.search-input(v-model="search_words")
+        input.form-control.search-input(
+          type="search",
+          v-model="search_words",
+          @input="store.dispatch('keywords_changed', search_words)"
+        )
+        span.glyphicon.glyphicon-remove-circle
     div.btn-con(v-for="d in dirs")
       router-link.btn.btn-block.btn-primary(
           :to=' "/dir" + d.path',
@@ -42,6 +47,7 @@ export default {
       dirs: [],
       files: [],
       search_words: '',
+      store: Store,
     }
   },
   components: {
@@ -65,6 +71,7 @@ export default {
       return path && path.match(/\/([^\/]+)\..*?$/)[1]
     },
     goto_path (path) {
+      this.search_words = Store.state.search_keywords
       this.path = path ? '/' + path.split("|").join("/") : '/'
       this.load_path(this.path)
     },

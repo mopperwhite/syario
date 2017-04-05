@@ -7,6 +7,7 @@ export default new Vuex.Store({
     has_dir_info: false,
     dir: '',
     filenames: [],
+    selected_files: [],
     routes: new Map,
     messages: [],
     file_flag: false,
@@ -15,12 +16,14 @@ export default new Vuex.Store({
     has_password: !!localStorage['password'],
     title: '',
     path: '/',
+    search_keywords: localStorage['search_keywords'],
     default_title: document.getElementsByTagName("title")[0].text,
   },
   mutations: {
     store_dir_info(state, info) {
       state.has_dir_info = true
       state.dir = info.dir
+      state.selected_files =
       state.filenames = info.filenames
     },
     send_message(state, m){
@@ -43,6 +46,10 @@ export default new Vuex.Store({
     },
     set_path(state, p){
       state.path = p
+    },
+    set_keywords(state, ks){
+      state.search_keywords = ks
+      localStorage['search_keywords'] = ks
     }
   },
   actions: {
@@ -92,5 +99,8 @@ export default new Vuex.Store({
       delete localStorage['password']
       commit('set_pwd_state', false)
     },
+    keywords_changed({commit}, ks){
+      commit('set_keywords', ks)
+    }
   }
 })

@@ -4,6 +4,9 @@ div
     div.row
       h1.text-center.col-md-12.col-xs-12
         | {{get_title(path)}}
+        span.small.text-muted(v-if="store.state.search_keywords")
+          br
+          | on "{{store.state.search_keywords}}"
     router-link.btn.btn-block.nav-btn.btn-link.btn-lg(:to="'/dir'+dirname(path)")
         span.glyphicon.glyphicon-chevron-up
   navigate-button-group(:priv_path = "priv_path", :next_path = "next_path")
@@ -136,22 +139,32 @@ export default {
       }
     },
     get_title(path){
-      return path && path.match(/\/([^\/]+?)(\..*)?$/)[1]
+      return path && path.match(/\/([^\/]+?)(\.html*)?$/)[1]
     },
     dirname(path) {
       let res = path.match(/^(.*)\/[^/]+$/)
       return res ? res[1] || '' : ''
     },
     calc_index () {
-      const len = Store.state.filenames.length
-      const i = Store.state.filenames.indexOf(this.path)
-      this.priv_path =  i!=0 ? Store.state.filenames[i-1] : null
-      this.next_path =  i!=len-1 ? Store.state.filenames[i+1] : null
+      let filenames = Store.state.search_keywords ?
+        Store.state.filenames.filter(s => {
+          s = this.get_title(s.toLowerCase())
+          for(let k of Store.state
+              .search_keywords.toLowerCase().split(" "))
+            if(s.indexOf(k) < 0)
+              return false
+          return true
+        }) : Store.state.filenames
+      let len = filenames.length
+      let i = filenames.indexOf(this.path)
+      this.priv_path =  i!=0 ? filenames[i-1] : null
+      this.next_path =  i!=len-1 ? filenames[i+1] : null
     }
   },
   created(){
     Bus.$on('route-goto:file', path => {
       this.goto_path(path)
+      this.calc_index()
     })
     Bus.$on('scroll', evt => {
       if(this.progress_needed =
