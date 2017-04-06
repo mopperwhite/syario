@@ -110,19 +110,20 @@ export default new Vuex.Store({
     keywords_changed({commit}, ks){
       commit('set_keywords', ks)
     },
-    login_firebase({commit}){
+    login_firebase({commit, dispatch}){
       let provider = new firebase.auth.GithubAuthProvider()
       provider.addScope('repo')
       firebase.auth().signInWithPopup(provider).then(result => {
         let token = result.credential.accessToken
         let user = result.user
         commit('set_firebase_uid', user.uid)
+        dispatch('info', 'succeed')
       }).catch(error => {
         let errorCode = error.code
         let errorMessage = error.message
         let email = error.email
         let credential = error.credential
-        this.dispatch('warn', `Failed to access Github: ${errorMessage}`)
+        dispatch('warn', `Failed to access Github: ${errorMessage}`)
       });
     },
     set_finished({commit, state}, {path, finished}){
