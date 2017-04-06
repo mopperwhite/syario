@@ -7,5 +7,13 @@
     "dark": "//cdn.bootcss.com/bootswatch/3.3.7/darkly/bootstrap.css",
     "light_": "//cdn.bootcss.com/bootswatch/3.3.7/darkly/bootstrap.css",
     "light": "//cdn.bootcss.com/bootswatch/3.3.7/yeti/bootstrap.css"
+  },
+  "firebase": {
+    "apiKey": "AIzaSyCj-7IiaZfE0BN4CVkn1_tB22CGZQIHw6w",
+    "authDomain": "syariosyncdata.firebaseapp.com",
+    "databaseURL": "https://syariosyncdata.firebaseio.com",
+    "projectId": "syariosyncdata",
+    "storageBucket": "syariosyncdata.appspot.com",
+    "messagingSenderId": "507207788613"
   }
 }

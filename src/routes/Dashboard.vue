@@ -17,8 +17,15 @@ div.center-block.dashboard.container
     | Set Passowrd
   button.btn.btn-danger.btn-block(@click="erase_pwd")
     | Erase Password
+  button.btn.btn-info.btn-block(@click="login_firebase_with_github")
+    | Sync Data via Firebase
+  p.text-muted.text-center.small
+    | The following domains are required to be accessable:
+    br
+    | googleapis.com, gstatic.com, firebaseapp.com, github.com
 </template>
 <script>
+import firebase from '../base'
 import store from '../store'
 import SetPassword from '../components/SetPassword.vue'
 export default {
@@ -26,7 +33,9 @@ export default {
     return {
       store,
       auto_lock_flag: !!localStorage['autolock'],
-      set_pwd_flag: false
+      set_pwd_flag: false,
+      tf_key: '',
+      tf_value: ''
     }
   },
   components: {
@@ -47,6 +56,9 @@ export default {
     },
     back () {
       window.history.back()
+    },
+    login_firebase_with_github(){
+      store.dispatch('login_firebase')
     }
   }
 }

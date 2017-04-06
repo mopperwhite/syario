@@ -9,8 +9,8 @@ end
 task :gen do
     if Dir.exists? 'dist/files'
       FileUtils.remove_dir 'dist/files'
-      Dir.mkdir 'dist/files'
     end
+    Dir.mkdir 'dist/files'
     IndexCreator
         .from_loaders_at('loaders', url_root: 'dist/files')
         .create_index('_files', 'dist/files')

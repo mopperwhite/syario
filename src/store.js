@@ -2,6 +2,9 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 Vue.use(Vuex)
 
+import {Base64} from 'js-base64'
+import firebase from './base'
+
 export default new Vuex.Store({
   state: {
     has_dir_info: false,
@@ -16,6 +19,7 @@ export default new Vuex.Store({
     has_password: !!localStorage['password'],
     title: '',
     path: '/',
+    firebase_uid: localStorage['firebase_uid'],
     search_keywords: localStorage['search_keywords'],
     default_title: document.getElementsByTagName("title")[0].text,
   },
@@ -50,6 +54,10 @@ export default new Vuex.Store({
     set_keywords(state, ks){
       state.search_keywords = ks
       localStorage['search_keywords'] = ks
+    },
+    set_firebase_uid(state, uid){
+      state.firebase_uid =
+      localStorage['firebase_uid'] = uid
     }
   },
   actions: {
@@ -101,6 +109,58 @@ export default new Vuex.Store({
     },
     keywords_changed({commit}, ks){
       commit('set_keywords', ks)
+    },
+    login_firebase({commit}){
+      let provider = new firebase.auth.GithubAuthProvider()
+      provider.addScope('repo')
+      firebase.auth().signInWithPopup(provider).then(result => {
+        let token = result.credential.accessToken
+        let user = result.user
+        commit('set_firebase_uid', user.uid)
+      }).catch(error => {
+        let errorCode = error.code
+        let errorMessage = error.message
+        let email = error.email
+        let credential = error.credential
+        this.dispatch('warn', `Failed to access Github: ${errorMessage}`)
+      });
+    },
+    set_finished({commit, state}, {path, finished}){
+      if(finished){
+        localStorage[`finished?${path}`] = "t"
+      }else{
+        delete localStorage[`finished?${path}`]
+      }
+      if(state.firebase_uid){
+        firebase
+          .database()
+          .ref(`users/${state.firebase_uid}/articles/${Base64.encode(path)}`)
+          .update({
+            finished,
+          })
+      }
+    },
+    set_progress({commit, state}, {path, progress}){
+      localStorage[`progress:${path}`] = progress
+      if(state.firebase_uid){
+        firebase
+          .database()
+          .ref(`users/${state.firebase_uid}/articles/${Base64.encode(path)}`)
+          .update({
+            progress,
+          })
+      }
+    },
+    sync_with_firebase({commit, state}, {path, next}){
+      if(!state.firebase_uid) return;
+      let nodekey = `users/${state.firebase_uid}/articles/${Base64.encode(path)}`
+      firebase
+        .database()
+        .ref(nodekey)
+        .on('value', snapshot => {
+          let r = snapshot.val()
+          next(r.progress, r.finished)
+        })
     }
   }
 })

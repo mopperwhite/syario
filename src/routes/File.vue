@@ -53,6 +53,7 @@ import Bus from '../bus'
 import Settings from '../../settings.json'
 import NavigateButtonGroup from '../components/NavigateButtonGroup.vue'
 import FixedBtnGroup from '../components/FixedBtnGroup.vue'
+import firebase from '../base'
 export default {
   name: 'filebrowser',
   data () {
@@ -78,12 +79,9 @@ export default {
       next(vm => vm.goto_path(to.params.path))
   },
   methods: {
-    set_finished(val){
-      if(this.finished = val){
-        localStorage[`finished?${this.path}`] = "t"
-      }else{
-        delete localStorage[`finished?${this.path}`]
-      }
+    set_finished(finished){
+      this.finished = finished
+      Store.dispatch('set_finished', {path: this.path, finished})
     },
     progress_stored(){
       return Math.abs(this.progress - this.local_progress)<1e-3
@@ -96,13 +94,22 @@ export default {
     },
     store_progress(){
       this.local_progress = this.progress
-      localStorage[`progress:${this.path}`] = this.progress
+      Store.dispatch('set_progress', {path: this.path, progress: this.progress})
     },
     goto_path (path) {
       Store.dispatch('enter_file')
       this.path = path ? '/' + path : '/'
-      this.local_progress = parseFloat(localStorage[`progress:${this.path}`])
-      this.finished = localStorage[`finished?${this.path}`]
+      Store.dispatch('sync_with_firebase', {
+        path: this.path,
+        next: (progress, finished) => {
+          this.local_progress = Math.max(
+            parseFloat(localStorage[`progress:${this.path}`]),
+            progress)
+          this.finished = finished || !!localStorage[`finished?${this.path}`]
+          Store.dispatch('set_finished', {path: this.path, finished: this.finished})
+          Store.dispatch('set_progress', {path: this.path, progress: this.local_progress})
+        }
+      })
       this.load_path(this.path)
     },
     load_path (path) {
