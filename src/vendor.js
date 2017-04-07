@@ -1,4 +1,6 @@
-import $ from 'jquery'
+import jQuery from 'jquery'
+window.$ = jQuery
+
 import "bootstrap/dist/css/bootstrap.css"
 /*
 import "bootstrap-material-design/dist/css/bootstrap-material-design.css"
@@ -12,4 +14,5 @@ $.material.ripples()
 import 'font-awesome/css/font-awesome.css'
 import 'font-awesome/fonts/fontawesome-webfont.ttf'
 import 'font-awesome/fonts/fontawesome-webfont.woff2'
-export default $
+
+export default jQuery

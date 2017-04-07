@@ -21,6 +21,8 @@
     "json-loader": "^0.5.4",
     "less": "^2.7.2",
     "less-loader": "^4.0.0",
+    "qcode-decoder": "^0.1.0",
+    "qrcode": "^0.8.1",
     "url-loader": "^0.5.8",
     "vue": "^2.2.1",
     "vue-resource": "^1.2.1",

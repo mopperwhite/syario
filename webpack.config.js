@@ -15,8 +15,11 @@ module.exports = {
   plugins: [
     new webpack.HotModuleReplacementPlugin(),
     new webpack.ProvidePlugin({ $: "jquery", jQuery: "jquery" }),
-    new ExtractTextPlugin("[name].css")
+    new ExtractTextPlugin("[name].css"),
   ],
+  externals: {
+    $: 'window.$'
+  },
   module: {
     rules: [
       {
@@ -65,7 +68,8 @@ module.exports = {
   resolve: {
     alias: {
       'vue$': 'vue/dist/vue.esm.js'
-    }
+    },
+    descriptionFiles: ['package.json', 'bower.json']
   },
   devServer: {
     historyApiFallback: true,

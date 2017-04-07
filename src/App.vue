@@ -28,6 +28,7 @@
 <script>
 import settings from '../settings.json'
 import store from './store'
+import firebase from './base'
 import Bus from './bus'
 import MessageBox from './components/MessageBox.vue'
 import Password from './components/Password.vue'
@@ -87,6 +88,11 @@ export default {
           document.title = store.state.title
         }
       }
+    })
+    this.$http.get('firebase.json')
+    .then(res => res.json())
+    .then(config => {
+      Bus.$emit('init_firebase', config)
     })
   }
 }

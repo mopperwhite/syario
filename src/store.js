@@ -2,7 +2,7 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 Vue.use(Vuex)
 
-import {Base64} from 'js-base64'
+import SHA256 from 'js-sha256'
 import firebase from './base'
 
 export default new Vuex.Store({
@@ -19,11 +19,15 @@ export default new Vuex.Store({
     has_password: !!localStorage['password'],
     title: '',
     path: '/',
-    firebase_uid: localStorage['firebase_uid'],
+    firebase_user: null,
+    firebase_enabled: false,
     search_keywords: localStorage['search_keywords'],
     default_title: document.getElementsByTagName("title")[0].text,
   },
   mutations: {
+    enable_firebase(state){
+      state.firebase_enabled = true
+    },
     store_dir_info(state, info) {
       state.has_dir_info = true
       state.dir = info.dir
@@ -55,9 +59,8 @@ export default new Vuex.Store({
       state.search_keywords = ks
       localStorage['search_keywords'] = ks
     },
-    set_firebase_uid(state, uid){
-      state.firebase_uid =
-      localStorage['firebase_uid'] = uid
+    set_firebase_user(state, user){
+      state.firebase_user = user
     }
   },
   actions: {
@@ -110,7 +113,7 @@ export default new Vuex.Store({
     keywords_changed({commit}, ks){
       commit('set_keywords', ks)
     },
-    login_firebase({commit, dispatch}){
+    login_firebase_github({commit, dispatch}){
       let provider = new firebase.auth.GithubAuthProvider()
       provider.addScope('repo')
       firebase.auth().signInWithPopup(provider).then(result => {
@@ -131,10 +134,10 @@ export default new Vuex.Store({
       }else{
         delete localStorage[`finished?${path}`]
       }
-      if(state.firebase_uid){
+      if(state.firebase_user){
         firebase
           .database()
-          .ref(`users/${state.firebase_uid}/articles/${Base64.encode(path)}`)
+          .ref(`users/${state.firebase_user.uid}/articles/${SHA256(path)}`)
           .update({
             finished,
           })
@@ -142,18 +145,21 @@ export default new Vuex.Store({
     },
     set_progress({commit, state}, {path, progress}){
       localStorage[`progress:${path}`] = progress
-      if(state.firebase_uid){
+      if(state.firebase_user){
         firebase
           .database()
-          .ref(`users/${state.firebase_uid}/articles/${Base64.encode(path)}`)
+          .ref(`users/${state.firebase_user.uid}/articles/${SHA256(path)}`)
           .update({
             progress,
           })
       }
     },
+    set_firebase_user({commit}, user){
+      commit('set_firebase_user', user)
+    },
     sync_with_firebase({commit, state}, {path, next}){
-      if(!state.firebase_uid) return;
-      let nodekey = `users/${state.firebase_uid}/articles/${Base64.encode(path)}`
+      if(!state.firebase_user) return;
+      let nodekey = `users/${state.firebase_user.uid}/articles/${SHA256(path)}`
       firebase
         .database()
         .ref(nodekey)
@@ -161,6 +167,34 @@ export default new Vuex.Store({
           let r = snapshot.val()
           next(r.progress, r.finished)
         })
+    },
+    firebase_login({commit, dispatch}, {email, password}){
+      firebase.auth()
+        .signInWithEmailAndPassword(email, password)
+        .catch(error => {
+          let errorCode = error.code
+          let errorMessage = error.message
+          let email = error.email
+          let credential = error.credential
+          dispatch('warn', `Error: ${errorMessage}`)
+        })
+    },
+    firebase_register({commit, dispatch}, {email, password}){
+      firebase.auth()
+        .createUserWithEmailAndPassword(email, password)
+        .catch(error => {
+          let errorCode = error.code
+          let errorMessage = error.message
+          let email = error.email
+          let credential = error.credential
+          dispatch('warn', `Error: ${errorMessage}`)
+        })
+    },
+    firebase_logout({commit}){
+      firebase.auth().signOut()
+        .catch(error => {
+          dispatch('warn', `Error: ${error.errorMessage}`)
+        })
     }
-  }
+  },
 })
