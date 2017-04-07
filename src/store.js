@@ -117,7 +117,6 @@ export default new Vuex.Store({
         let token = result.credential.accessToken
         let user = result.user
         commit('set_firebase_uid', user.uid)
-        dispatch('info', 'succeed')
       }).catch(error => {
         let errorCode = error.code
         let errorMessage = error.message
