@@ -26,11 +26,10 @@ div
       router-link.btn.btn-block(
           v-if="!search_words || match_search(f.title)",
           :to=' "/file" + f.path',
-          :class='{"btn-info": !file_read(f.path), "btn-success": file_read(f.path)}'
+          :class='{"btn-info": !f.finished, "btn-success": f.finished}'
         )
         | {{f.title}}
-  fixed-btn-group
-
+  fixed-btn-group(@refresh="sync_finished")
 </template>
 <script>
 import '../styles/buttons.css'
@@ -78,13 +77,29 @@ export default {
       let res = path.match(/^(.*)\/[^/]+$/)
       return res ? res[1] || '' : ''
     },
+    sync_finished(){
+      for(let f of this.files){
+        Store.dispatch('sync_with_firebase', {
+          path: f.path,
+          next: (progress, finished) => {
+            f.finished =
+              finished || !!localStorage[`finished?${f.path}`]
+          }
+        })
+      }
+    },
     load_path (path) {
       this.$http.get('dist/files'+
         (path == '/' ? '' : path)+'/index.json')
         .then(res => res.json())
         .then(data => {
           this.dirs = data.dirs
+          for(let f of data.files){
+            f.finished =
+              !!localStorage[`finished?${f.path}`]
+          }
           this.files = data.files
+          this.sync_finished()
           Store.dispatch('enter_dir', {
             dir: path,
             filenames: data.files.map(f => f.path)

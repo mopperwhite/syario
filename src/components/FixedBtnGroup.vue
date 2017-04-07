@@ -4,6 +4,7 @@ div.fixed-btn-group.btn-group-vertical(
     :class='{"left-edge": left_hand, "right-edge": !left_hand}'
   )
   slot
+  button.btn.fa.fa-refresh(@click="refresh")
   button.btn(
       v-if="store.state.has_password"
       @click="lock"
@@ -23,6 +24,9 @@ export default {
   methods: {
     lock(){
       store.dispatch('lock')
+    },
+    refresh(){
+      this.$emit('refresh')
     }
   }
 }

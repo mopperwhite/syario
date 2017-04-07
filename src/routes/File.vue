@@ -33,7 +33,7 @@ div
           aria-hidden="true")
         | {{ finished ? 'FINISHED' : 'READING' }}
   navigate-button-group(:priv_path = "priv_path", :next_path = "next_path")
-  fixed-btn-group
+  fixed-btn-group(@refresh="sync")
     router-link.col-md-12.col-xs-12.btn.btn-block.nav-btn.btn-default.btn-lg(
       :to="'/dir'+dirname(path)")
       span.glyphicon.glyphicon-chevron-up
@@ -96,20 +96,28 @@ export default {
       this.local_progress = this.progress
       Store.dispatch('set_progress', {path: this.path, progress: this.progress})
     },
-    goto_path (path) {
-      Store.dispatch('enter_file')
-      this.path = path ? '/' + path : '/'
+    sync(){
       Store.dispatch('sync_with_firebase', {
         path: this.path,
         next: (progress, finished) => {
-          this.local_progress = Math.max(
-            parseFloat(localStorage[`progress:${this.path}`]),
-            progress)
-          this.finished = finished || !!localStorage[`finished?${this.path}`]
+          this.local_progress =
+            Math.max(
+              0 || parseFloat(localStorage[`progress:${this.path}`]),
+              progress)
+          this.finished=
+            finished || !!localStorage[`finished?${this.path}`]
           Store.dispatch('set_finished', {path: this.path, finished: this.finished})
-          Store.dispatch('set_progress', {path: this.path, progress: this.local_progress})
+          Store.dispatch('set_progress', {
+            path: this.path,
+            progress: local_progress
+          })
         }
       })
+    },
+    goto_path (path) {
+      Store.dispatch('enter_file')
+      this.path = path ? '/' + path : '/'
+      this.sync()
       this.load_path(this.path)
     },
     load_path (path) {

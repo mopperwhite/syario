@@ -17,6 +17,8 @@ div.center-block.dashboard.container
     | Set Passowrd
   button.btn.btn-danger.btn-block(@click="erase_pwd")
     | Erase Password
+  button.btn.btn-danger.btn-block(@click="clear_localstorage")
+    | Clear Local Records
   template(v-if="store.state.firebase_enabled")
     h3.text-center
       | Sync Your Progress via Firebase
@@ -59,6 +61,10 @@ export default {
     SetPassword
   },
   methods: {
+    clear_localstorage () {
+      if(confirm('Do you want to delete ALL your local data\nincluding password and progress?'))
+        localStorage.clear()
+    },
     set_autolock(s) {
       this.auto_lock_flag = s
       if(s){

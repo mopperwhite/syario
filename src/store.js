@@ -163,9 +163,13 @@ export default new Vuex.Store({
       firebase
         .database()
         .ref(nodekey)
-        .on('value', snapshot => {
+        .once('value', snapshot => {
           let r = snapshot.val()
-          next(r.progress, r.finished)
+          if(r){
+            next(r.progress, r.finished)
+          }else {
+            next(0, false)
+          }
         })
     },
     firebase_login({commit, dispatch}, {email, password}){
