@@ -84,6 +84,10 @@ export default {
           next: (progress, finished) => {
             f.finished =
               finished || !!localStorage[`finished?${f.path}`]
+            Store.dispatch('set_finished', {
+              path: f.path,
+              finished: f.finished
+            })
           }
         })
       }
