@@ -190,6 +190,16 @@ export default {
           (document.scrollingElement.scrollHeight-window.innerWidth)
       }
     })
+    Bus.$on('key-navi', dire => {
+      let p = {
+        priv: this.priv_path,
+        next: this.next_path,
+      }[dire]
+      if(p){
+        this.store_progress()
+        this.$router.push("/file" + p)
+      }
+    })
   }
 }
 </script>
