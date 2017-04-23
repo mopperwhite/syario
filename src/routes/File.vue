@@ -191,6 +191,7 @@ export default {
       }
     })
     Bus.$on('key-navi', dire => {
+      if(!Store.state.file_flag) return;
       let p = {
         priv: this.priv_path,
         next: this.next_path,
