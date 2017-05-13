@@ -91,7 +91,7 @@ export default {
       if(!text || !store.state.youdao) return;
       console.log(text)
       let youdao = store.state.youdao
-      this.$http.jsonp(`http://fanyi.youdao.com/openapi.do?keyfrom=${youdao.keyfrom}&key=${youdao.key}&type=data&doctype=jsonp&version=1.1&q=${encodeURI(text)}`)
+      this.$http.jsonp(`https://fanyi.youdao.com/openapi.do?keyfrom=${youdao.keyfrom}&key=${youdao.key}&type=data&doctype=jsonp&version=1.1&q=${encodeURI(text)}`)
         .then(e => e.json())
         .then(res => {
           if(res.errorCode == 0){
