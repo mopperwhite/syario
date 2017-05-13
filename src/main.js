@@ -8,6 +8,7 @@ Vue.use(VueResource)
 import App from './App.vue'
 import router from './router'
 import bus from './bus'
+import store from './store'
 
 if(!window.localStorage){
   window.localStorage = {}
@@ -20,12 +21,23 @@ KeyboardJs.on('right', evt => {
   bus.$emit('key-navi', 'next')
 })
 
+delete Hammer.defaults.cssProps.userSelect
 const hammertime = new Hammer(document.body)
 hammertime.on('swipeleft', evt => {
   bus.$emit('key-navi', 'next')
 })
 hammertime.on('swiperight', evt => {
   bus.$emit('key-navi', 'priv')
+})
+
+document.addEventListener('selectionchange', evt => {
+  let sel = window.getSelection()
+  if(!sel.baseNode){
+    store.commit('set_selected_text', '')
+  }else{
+    let text = sel.baseNode.textContent.slice(sel.baseOffset, sel.extentOffset)
+    store.commit('set_selected_text', text)
+  }
 })
 
 new Vue({

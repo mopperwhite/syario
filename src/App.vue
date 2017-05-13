@@ -1,11 +1,11 @@
 <template lang="jade">
-  #app
+  div#app
     link(
       rel="stylesheet",
-      :href="theme_link"
+      :href="store.state.theme_link"
     )
     div
-      div(v-for="m in store.state.messages")
+      div.msg-box(v-for="m in store.state.messages")
         message-box(
           :msg = "m.message",
           :type = "m.type",
@@ -67,10 +67,10 @@ export default {
     }
   },
   created(){
-    this.check_time()
-    setInterval(() => {
-      this.check_time()
-    }, 5000)
+    // this.check_time()
+    // setInterval(() => {
+    //   this.check_time()
+    // }, 5000)
     window.addEventListener('scroll', evt => {
       if(store.state.file_flag){
         Bus.$emit('scroll', evt)
@@ -94,9 +94,20 @@ export default {
     .then(config => {
       Bus.$emit('init_firebase', config)
     })
+    this.$http.get('youdao.json')
+    .then(res => res.json())
+    .then(config => {
+      store.commit('set_youdao', config)
+    })
   }
 }
 </script>
-
-<style>
+<style scoped>
+.msg-box{
+  position: fixed;
+  width: 100%;
+  top: 0;
+  left: 0;
+}
 </style>
+

@@ -17,6 +17,7 @@ class MdRender < Redcarpet::Render::HTML
 end
 on_ext :md
 for_each do |src, dst|
+    next if File.exists?(dst) && File.mtime(dst) >= File.mtime(src)
     res = Redcarpet::Markdown
         .new(MdRender)
         .render(File.read src)

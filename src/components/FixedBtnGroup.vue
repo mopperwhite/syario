@@ -4,7 +4,8 @@ div.fixed-btn-group.btn-group-vertical(
     :class='{"left-edge": left_hand, "right-edge": !left_hand}'
   )
   slot
-  button.btn.fa.fa-refresh(@click="refresh")
+  button.btn.btn-default.fa.fa-moon-o(@click = "store.commit('set_night_shift', !store.state.night_shift)")
+  button.btn.btn-default.fa.fa-refresh(@click="refresh")
   button.btn(
       v-if="store.state.has_password"
       @click="lock"

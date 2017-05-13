@@ -4,6 +4,12 @@ Vue.use(Vuex)
 
 import SHA256 from 'js-sha256'
 import firebase from './base'
+import settings from '../settings.json'
+
+function at_night(){
+  let h = new Date().getHours()
+  return h <= 6 || h > 22
+}
 
 export default new Vuex.Store({
   state: {
@@ -14,7 +20,7 @@ export default new Vuex.Store({
     routes: new Map,
     messages: [],
     file_flag: false,
-    night_shift: false,
+    night_shift: at_night(),
     locked: true,
     has_password: !!localStorage['password'],
     title: '',
@@ -23,8 +29,21 @@ export default new Vuex.Store({
     firebase_enabled: false,
     search_keywords: localStorage['search_keywords'],
     default_title: document.getElementsByTagName("title")[0].text,
+    selected_text: '',
+    translated_text: '',
+    youdao: null,
+    theme_link: at_night() ? settings.themes.dark :  settings.themes.light
   },
   mutations: {
+    set_youdao(state, youdao){
+      state.youdao = youdao
+    },
+    set_translated_text(state, text){
+      state.translated_text = text
+    },
+    set_selected_text(state, text){
+      state.selected_text = text
+    },
     enable_firebase(state){
       state.firebase_enabled = true
     },
@@ -42,6 +61,7 @@ export default new Vuex.Store({
     },
     set_night_shift(state, s){
       state.night_shift = s
+      state.theme_link = s ? settings.themes.dark : settings.themes.light
     },
     set_lock(state, s){
       state.locked = s

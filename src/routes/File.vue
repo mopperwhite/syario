@@ -18,7 +18,9 @@ div
   h1.text-muted.text-center(v-if="loading")
     | Loading...
   div.arti-con.center-block(v-else)
-    div.article(v-html="content", :class="{'night-shift': (image_night_shift && store.state.night_shift)}")
+    div.article(
+      v-html="content", 
+      :class="{'night-shift': (image_night_shift && store.state.night_shift)}")
   div.container
     div.row.botnavi
       router-link.col-md-6.col-xs-6.btn.btn-default(:to="'/dir'+dirname(path)")
@@ -37,6 +39,8 @@ div
     router-link.col-md-12.col-xs-12.btn.btn-block.nav-btn.btn-default.btn-lg(
       :to="'/dir'+dirname(path)")
       span.glyphicon.glyphicon-chevron-up
+    button.btn.btn-default(@click="translate(store.state.selected_text)")
+      i.fa.fa-globe
     button.btn(
         v-if="progress_needed",
         :class='{"btn-info": !progress_stored(), "btn-success": progress_stored()}',
@@ -44,11 +48,15 @@ div
       )
       i.fa.fa-star-o(aria-hidden="true")
       | {{(progress*100).toFixed(1)}}%
+  div.translation_bar.bg-info(
+    v-if="store.state.translated_text",
+    @click="store.commit('set_translated_text', '')")
+    div(v-html="store.state.translated_text")
 </template>
 <script>
 import '../styles/night-shift.css'
 import '../styles/buttons.css'
-import Store from '../store'
+import store from '../store'
 import Bus from '../bus'
 import Settings from '../../settings.json'
 import NavigateButtonGroup from '../components/NavigateButtonGroup.vue'
@@ -68,7 +76,7 @@ export default {
       loading: false,
       progress_needed: true,
       image_night_shift: Settings.night_shift.image,
-      store: Store
+      store: store
     }
   },
   components: {
@@ -79,9 +87,30 @@ export default {
       next(vm => vm.goto_path(to.params.path))
   },
   methods: {
+    translate(text){
+      if(!text || !store.state.youdao) return;
+      console.log(text)
+      let youdao = store.state.youdao
+      this.$http.jsonp(`http://fanyi.youdao.com/openapi.do?keyfrom=${youdao.keyfrom}&key=${youdao.key}&type=data&doctype=jsonp&version=1.1&q=${encodeURI(text)}`)
+        .then(e => e.json())
+        .then(res => {
+          if(res.errorCode == 0){
+            store.commit('set_translated_text', res.translation.join('<br/>'))
+          }else{
+            let msg = [
+              'Text is too long.',
+              'Can not translate.',
+              'This language is not available.',
+              'Failed to auth.',
+              'No result.'
+            ]
+            store.dispatch('warn', msg[res.errorCode / 10 - 2])
+          }
+        })
+    },
     set_finished(finished){
       this.finished = finished
-      Store.dispatch('set_finished', {path: this.path, finished})
+      store.dispatch('set_finished', {path: this.path, finished})
     },
     progress_stored(){
       return Math.abs(this.progress - this.local_progress)<1e-3
@@ -94,10 +123,10 @@ export default {
     },
     store_progress(){
       this.local_progress = this.progress
-      Store.dispatch('set_progress', {path: this.path, progress: this.progress})
+      store.dispatch('set_progress', {path: this.path, progress: this.progress})
     },
     sync(){
-      Store.dispatch('sync_with_firebase', {
+      store.dispatch('sync_with_firebase', {
         path: this.path,
         next: (progress, finished) => {
           this.local_progress =
@@ -106,8 +135,8 @@ export default {
               progress)
           this.finished=
             finished || !!localStorage[`finished?${this.path}`]
-          Store.dispatch('set_finished', {path: this.path, finished: this.finished})
-          Store.dispatch('set_progress', {
+          store.dispatch('set_finished', {path: this.path, finished: this.finished})
+          store.dispatch('set_progress', {
             path: this.path,
             progress: local_progress
           })
@@ -115,7 +144,7 @@ export default {
       })
     },
     goto_path (path) {
-      Store.dispatch('enter_file')
+      store.dispatch('enter_file')
       this.path = path ? '/' + path : '/'
       this.sync()
       this.load_path(this.path)
@@ -127,23 +156,23 @@ export default {
               res => {
                 switch (res.status) {
                   case 404:
-                    Store.dispatch('warn', 'File Not Found.')
+                    store.dispatch('warn', 'File Not Found.')
                     break;
                   default:
-                    Store.dispatch('error', 'Unknown Network Error.')
+                    store.dispatch('error', 'Unknown Network Error.')
                 }
               })
         .then(c => {
           this.content = c
           this.loading = false
         })
-      if(!Store.state.has_dir_info){
+      if(!store.state.has_dir_info){
         this.$http.get('dist/files'+
           this.dirname(this.path)+'/index.json')
           .then(
             res => res.json())
           .then(data => {
-            Store.dispatch('enter_dir', {
+            store.dispatch('enter_dir', {
               dir: path,
               filenames: data.files.map(f => f.path)
             })
@@ -161,15 +190,15 @@ export default {
       return res ? res[1] || '' : ''
     },
     calc_index () {
-      let filenames = Store.state.search_keywords ?
-        Store.state.filenames.filter(s => {
+      let filenames = store.state.search_keywords ?
+        store.state.filenames.filter(s => {
           s = this.get_title(s.toLowerCase())
-          for(let k of Store.state
+          for(let k of store.state
               .search_keywords.toLowerCase().split(" "))
             if(s.indexOf(k) < 0)
               return false
           return true
-        }) : Store.state.filenames
+        }) : store.state.filenames
       let len = filenames.length
       let i = filenames.indexOf(this.path)
       this.priv_path =  i!=0 ? filenames[i-1] : null
@@ -191,7 +220,7 @@ export default {
       }
     })
     Bus.$on('key-navi', dire => {
-      if(!Store.state.file_flag) return;
+      if(!store.state.file_flag) return;
       let p = {
         priv: this.priv_path,
         next: this.next_path,
@@ -210,5 +239,13 @@ export default {
 }
 .article{
   font-size: 2em;
+}
+.translation_bar{
+  position: fixed;
+  width: 100%;
+  padding: 1em;
+  bottom: 0;
+  left: 0;
+  margin: 0;
 }
 </style>
