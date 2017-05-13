@@ -36,7 +36,8 @@ function get_selection(){
     store.commit('set_selected_text', '')
   }else{
     let text = sel.baseNode.textContent.slice(sel.baseOffset, sel.extentOffset)
-    store.commit('set_selected_text', text)
+    if(text)
+      store.commit('set_selected_text', text)
   }
 }
 if(/iPad|iPhone|iPod/.test(navigator.userAgent)){
