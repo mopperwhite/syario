@@ -30,7 +30,7 @@ hammertime.on('swiperight', evt => {
   bus.$emit('key-navi', 'priv')
 })
 
-document.addEventListener('selectionchange', evt => {
+function get_selection(){
   let sel = window.getSelection()
   if(!sel.baseNode){
     store.commit('set_selected_text', '')
@@ -38,7 +38,13 @@ document.addEventListener('selectionchange', evt => {
     let text = sel.baseNode.textContent.slice(sel.baseOffset, sel.extentOffset)
     store.commit('set_selected_text', text)
   }
-})
+}
+if(/iPad|iPhone|iPod/.test(navigator.userAgent)){
+  setInterval(get_selection, 50)
+}else{
+  document.addEventListener('selectionchange', get_selection, false)
+}
+
 
 new Vue({
   components: {
